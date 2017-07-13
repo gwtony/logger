@@ -189,17 +189,19 @@ func Configure(config Config) {
 	DefaultLoggerConfig = config
 }
 
-func Init(file, level string, size, backup int, stackstrace bool) (*Log, error) {
+func Init(file, level string, size, backup int, stackstrace bool) (Log, error) {
+	log := Log{}
+
 	name := filepath.Base(file)
 	if name == "" {
-		return nil, errors.New("Bad file")
+		return log, errors.New("Bad file")
 	}
 	dir := filepath.Dir(file)
 	if dir == "" {
 		dir = "./"
 	}
 	if size < 0 || backup < 0 {
-		return nil, errors.New("Bad size or backup")
+		return log, errors.New("Bad size or backup")
 	}
 
 	config := Config{
@@ -216,12 +218,10 @@ func Init(file, level string, size, backup int, stackstrace bool) (*Log, error) 
 		level = "error"
 	}
 	if err := SetLogLevel(level); err != nil {
-		return nil, err
+		return log, err
 	}
 
 	Configure(config)
-
-	log := &Log{}
 
 	return log, nil
 }
@@ -278,5 +278,3 @@ func SetLogLevel(level string) error {
 
 	return nil
 }
-
-
